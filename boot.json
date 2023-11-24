@@ -1,18 +1,18 @@
 {
   "name": "Bailey's piggy_banks",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "styleFileList": [],
   "scriptFileList": [],
   "tweeFileList": [
-    "Tack Baileys money.twee",
-    "Bailey's piggy_banks.twee"
+    "Bailey's piggy_banks.twee",
+    "Tack Baileys money.twee"
   ],
   "imgFileList": [],
   "additionFile": [
     "addon-replace/core_code.txt",
     "addon-replace/log.txt",
     "addon-replace/swich.txt",
-    "README.md"
+    "readme.md"
   ],
   "addonPlugin": [
     {
@@ -31,7 +31,7 @@
   "dependenceInfo": [
     {
       "modName": "ModLoader",
-      "version": ">=2.5.2"
+      "version": ">=1.1.0"
     },
     {
       "modName": "ModLoader DoL ImageLoaderHook",
