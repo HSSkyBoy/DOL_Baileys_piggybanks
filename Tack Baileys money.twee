@@ -1,11 +1,11 @@
 :: Tack Bailey's money
-<<if $renttime gte 5 and $PC_rent_money_take_back isnot 0>>					<!--被贝利收租金，三日内可取回-->
+<<if $renttime gte 5 and $PC_rent_money_take_back isnot 0>>					<!--被贝利收租金三日内可取回-->
 	<<set _Baileys_money += $PC_rent_money_take_back>>
 	<<set $PC_rent_money_take_back to 0>>
 	你在金库里发现了熟悉的东西，<span class="gold">那是你上缴给贝利的租金！</span>
-	失而复得的感觉非常好<<llstress>><<stress -50>><br>
+	失而复得的感觉非常好<<llstress>><<stress -30>><br>
 <</if>>	
-<<if $Tack_Baileys_money_init isnot Time.days>>								<!--判断今日是否初始化过小金库的钞票-->
+<<if $Tack_Baileys_money_init isnot Time.days>>								<!--判断今日是否初始化过小金库的钱-->
 	<<if $Baileys_money lt 100>>											<!--防止计算后出现小于1的情况-->
 		<<set _Baileys_money to 1000>>
 		<<set $Baileys_money to 1000>>
@@ -20,13 +20,13 @@
 		你将金库里头的钱一扫而空，你获得了<<printmoney _Baileys_money>>，一想到平时贝利是如何敲诈你的，当<<nnpc_his "Bailey">>发现金库的钱消失不见气急败坏的模样
 		，你的心情大好。<<llstress>><<stress -20>><br>
 	<<elseif _Baileys_money gte 300000>>
-		金库里有许多钱，你获得了<<printmoney _Baileys_money>>，满载而归让你情绪高涨。<<lstress>><<stress -10>><br>
+		金库里有许多钱，你获得了<<printmoney _Baileys_money>>，满载而归使你情绪高涨。<<lstress>><<stress -10>><br>
 	<<elseif _Baileys_money gte 100000>>
 		你把金库里的钱全收进口袋，你获得了<<printmoney _Baileys_money>>，收获还不错。<<lstress>><<stress -5>><br>
 	<<elseif _Baileys_money gte 50000>>
 		你把金库里的钱全收进口袋，口袋甚至没装满，你获得了<<printmoney _Baileys_money>>，收获还行。<<lstress>><<stress -3>><br>	
 	<<elseif _Baileys_money gte 10000>>
-		金库里头只有少许的钱，你获得了<<printmoney _Baileys_money>>，或许你得考虑去打劫其他地方？<br>
+		金库里头没啥钱，你只获得了<<printmoney _Baileys_money>>，或许你得考虑去打劫其他地方？<br>
 	<<elseif _Baileys_money lt 10000>>
 		太惨了！金库里头只有少许的铜板，贝利该不会还有其他地方藏钱吧？<br>
 	<</if>>	
@@ -39,7 +39,7 @@
 <<getouticon>><<link [[离开|Bailey's Office]]>><<endevent>><</link>><br>
 
 
-<!--调试用-->
+<!--debug用-->
 <<if $debug is 1>>
 	金库里头现在有：<<printmoney _Baileys_money>> _Baileys_money<br>
 	RNG(小于25则金库裡没钱)：$rng<br>

@@ -1,126 +1,15 @@
 :: Bailey's piggy_banks
-<<if $Baileys_money is undefined>> 								<!--第一次触发事件初始化贝利存款-->
-	<<set $Baileys_money to random(10000, 100000) * (Time.days + random(30, 90))>> <!--(Time.days + random(30, 90)防止刚开新档就去撬金库导致贝利存款为0-->
-	<<set $Baileys_money_refresh to Time.days +7>>		<!--下一次被利存款刷新日-->
-	<<set $Baileys_PC_rent_money to $rentmoney>>		<!--贝利打算收取的租金-->
-	<<set $Baileys_money_init_date to Time.days>>		<!--本次贝利存款刷新日，用于下次计算刷新-->
-	<<if $renttime gte 5 and Time.days gt 7>>			<!--被贝利收租金三日内可取回刷新，须至少被收取一次(被卖掉也算)-->
-		<<set $PC_rent_money_take_back to $Baileys_PC_rent_money>>	<!--被贝利收租金三日内可取回，金额初始化-->
-	<<else>>
-		<<set $PC_rent_money_take_back to 0>>
-	<</if>>	
-<<else>>
-	<<if Time.days gte $Baileys_money_refresh >>				<!--七天后触发更新贝利存款-->
-		<<set _Baileys_money_init_pass_temp to Time.days>>
-		<<set _Baileys_money_init_pass to _Baileys_money_init_pass_temp - $Baileys_money_init_date>>	<!--计算举离上次刷新后过了多少天-->
-		<<for _i to _Baileys_money_init_pass; _i gt 0 ; _i-->>  
-			<<set _random_plus to random(0, 2)>>
-			<<if _random_plus lte 1>>											<!--贝利存款每日随机增减-->
-				<<set $Baileys_money += Math.round(($Baileys_money * 0.05))>>
-			<<else>>
-				<<set $Baileys_money -= Math.round(($Baileys_money * 0.01))>>
-			<</if>>
-		<</for>>	
-		<<if $Baileys_money lte 0>>								<!--防止贝利的钱被偷光后无法再生-->
-			<<set $Baileys_money to random(10000, 100000) * (Time.days + random(30, 90)) * _Baileys_money_init_pass>>
-		<</if>>	
-		<<if $renttime gte 5 >>									<!--被贝利收租金三日内可取回刷新(被卖掉也算)-->
-			<<set $Baileys_money += $Baileys_PC_rent_money>>
-			<<set $PC_rent_money_take_back to $Baileys_PC_rent_money>>
-		<<else>>
-			<<set $Baileys_PC_rent_money to $rentmoney>>
-		<</if>>	
-		<<set $Baileys_money_refresh to Time.days + 7>>			<!--设定下一次被利存款刷新日-->
-		<<set $Baileys_money_init_date to Time.days>>			<!--本次贝利存款刷新日，用于下次计算刷新-->
-		
-	<</if>>
-<</if>>	
 
+<<Baileys_money>>
 <<if Time.hour lt 6 >>
-	<<if $visited_today isnot Time.days>>
+	<<if $lockpicking_tody isnot Time.days>>
 		现在是半夜，也许你可以尝试撬开贝利的小金库？
 		<<if $skulduggery lt 1000>>
 			<<gskulduggery>>
 		<</if>>
 		<br>
-		<<set $lock to random(400, 1100)>>	<!--初始化解锁难度-->
-		<<set $unlock to 0>>				<!--初始化今日贝利是否忘记上锁-->
-		<<set $taken_Baileys_money to 0>>	<!--初始化拿过贝利的钱-->
-		<<set $visited_today to Time.days>> <!--用于锁定今日的撬锁难度-->
-		<<set $lockpicking_tody_stage to 0>> <!--用于初始化尝试撬开金库，防止无限刷诡术-->
-		<<set _random_seed to 1002>>		<!--计算忘记上锁机率，待优化-->
-		<<if $rng lte 50 >>				
-			<<set _random_seed to (_random_seed - $skulduggery)>>
-			<<set _random_unlock to (1, _random_seed)>>
-			<<if _random_unlock lte 1 >>
-				<<set $unlock to 1>>	
-			<</if>> 	
-		<</if>>	
-		<<lockpickicon>>
-		<<link [[尝试撬开贝利的小金库(0:10)|Bailey's piggy_banks]]>>
-		    <<set $lockpicking_tody to Time.days>>	<!--用于锁定当日初始化参数，防止无限刷新-->
-		    <<pass 10>>
-		    <<crimeUp 20 "trespassing">>
-		<</link>><<crime "trespassing">> 
-		<br>
-	<<elseif $lockpicking_tody isnot Time.days and Time.hour lt 6>>
-		现在是半夜，也许你可以尝试撬开贝利的小金库？
-		<<if $skulduggery lt 1000>>
-			<<gskulduggery>>		<!--显示犯罪行为"非法入侵"-->
-		<</if>>
-		<br>		
-		<<lockpickicon>>
-		<<link [[尝试撬开贝利的小金库(0:10)|Bailey's piggy_banks]]>>
-		    <<set $lockpicking_tody to Time.days>>		<!--$lockpicking_tody用于锁定是否撬过小金库-->
-		    <<pass 10>>
-		    <<crimeUp 20 "trespassing">>
-		<</link>><<crime "trespassing">> 
-		<br>					
-	<<elseif $lockpicking_tody is Time.days and Time.hour lt 6>> 
-		你正蹲在贝利的小金库前，
-		<<if currentSkillValue('skulduggery') gte $lock and $unlock is 0>>
-			成功撬开贝利的小金库
-			<<if $skulduggery lt 1000 and $lockpicking_tody_stage isnot Time.days>>
-				<span class="gold"> 你学到一些诡术上的技巧。</span>
-				<<set $skulduggery += 10>>
-				<<set $lockpicking_tody_stage to Time.days>>		<!--锁定今日已尝试撬开金库，防止无限刷诡术-->
-			<</if>>
-			<br>
-			<<link [[拿走金库里的钱|Tack Bailey's money]]>><<crimeUp 10 "thievery">><</link>><<crime "thievery">><br>
-		<<else>>
-			<<if currentSkillValue('skulduggery') lt $lock and $lock lte 1000 and $unlock is 0>>
-				撬了半天，锁一点也没有撬开的迹象，你不得不承认
-				<span class="red">你的能力不足已撬开它</span><<skulduggeryrequired>>
-				<<if $skulduggery lt 1000 and $lockpicking_tody_stage isnot Time.days>>
-					<span class="gold"> 你学到一些诡术上的技巧。</span>
-					<<set $skulduggery += 5>>
-					<<set $lockpicking_tody_stage to Time.days>>
-				<</if>>
-				<br>
-				也许......，你可以尝试看看附近有没有甚么转开密码锁的提示？
-				<!--此处可新增撬锁小游戏(猜数字)-->
-			<<elseif $lock gt 1000 and $unlock is 0>>
-				撬了半天，你发现似乎有点不一样，
-				<span class="red">需要特殊的方式解开。</span>
-				<<if $skulduggery lt 1000 and $lockpicking_tody_stage isnot Time.days>>
-					<span class="gold"> 你学到一些诡术上的技巧。</span>
-					<<set $skulduggery += 1>>
-					<<set $lockpicking_tody_stage to Time.days>>
-				<</if>>
-				<br>
-				<!--此处可新增被贝利发现事件-->
-			<<elseif $unlock is 1>>
-				惊讶的发现，
-				<span class="green">贝利似乎忘了上锁。</span>
-				<br>
-				<<link [[拿走金库里的钱|Tack Bailey's money]]>><<crimeUp 10 "thievery">><<unset $unlock>><</link>><<crime "thievery">><br>
-			<<elseif $taken_Baileys_money is 1>>
-				里头空空如也，啥也没有。
-				<br>
-			<</if>>	
-		<</if>>	
 	<</if>>	
-	<br>
+	<<steal_Baileys_money>>		<!--显示 撬开贝利的小金库-->
 <<else>>
 	<<if Time.hour gt 6 and Time.hour lt 10 >>
 		贝利就在旁边呢！你不能明目张胆的撬开贝利的金库而不被发现。<br>
@@ -132,46 +21,7 @@
 <</if>>
 <<getouticon>><<link [[离开|Bailey's Office]]>><<endevent>><</link>><br>
 
-
-<!--调试用-->
+<!--debug用-->
 <<if $debug is 1>> 
-	Baileys_money= <<printmoney $Baileys_money>><br>
-	Baileys_money_PC=<<printmoney $Baileys_PC_rent_money>><br>
-	现在时间<<print Time.hour>>点 <br>
-	撬锁难度：$lock <br>
-	今日是否撬过贝利的小金库？:
-	<<if $lockpicking_tody is Time.days>>
-		是<br>
-	<<else>>	
-		否<br>
-	<</if>>
-	lockpicking进度：$lockpicking_tody_stage <br>
-	上一次刷新贝利存款：$Baileys_money_init_date<br>
-	是否过了一周(刷新贝利存存款)？=
-	<<if Time.days gte $Baileys_money_refresh>>
-		是 <br>
-		Timedays= <<print Time.days>> <br>
-		Baileys_money_refresh= $Baileys_money_refresh<br>
-	<<else>>
-		否 <br>
-		Timedays= <<print Time.days>> <br>
-		Baileys_money_refresh= $Baileys_money_refresh<br>
-	<</if>>
-	游戏开始过了<<print Time.days>>天 <br>		
-	<<link [[强制忘记锁金库(DeBug)|$passage]]>>
-		<<set $unlock to 1>>
-	<</link>><br>
-	<<link [[重置场景(DeBug)|Bailey's Office]]>>
-		<<unset $Baileys_money>>
-		<<unset $Baileys_money_init_date>>
-		<<unset $Baileys_PC_rent_money>>
-		<<unset $PC_rent_money_take_back>>		
-		<<unset $visited_today>>
-		<<unset $lockpicking_tody>>
-		<<unset $lockpicking_tody_stage >>
-		<<unset $Baileys_money_refresh>>
-		<<unset $unlock>>
-		<<unset $Tack_Baileys_money_init>>		
-		<<unset $taken_Baileys_money >>
-	<</link>><br>
+	<<Baileys_piggy_banks_debug>>
 <</if>>
