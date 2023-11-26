@@ -14,7 +14,7 @@
 	<<else>>
 		<<if Time.days gte $Baileys_money_refresh >>				<!--七天后触发更新贝利存款-->
 			<<set _Baileys_money_init_pass_temp to Time.days>>
-			<<set _Baileys_money_init_pass to _Baileys_money_init_pass_temp - $Baileys_money_init_date>>	<!--计算举离上次刷新后过了多少天-->
+			<<set _Baileys_money_init_pass to _Baileys_money_init_pass_temp - $Baileys_money_init_date>>	<!--计算距离上次刷新后过了多少天-->
 			<<for _i to _Baileys_money_init_pass; _i gt 0 ; _i-->>  
 				<<set _random_plus to random(0, 2)>>
 				<<if _random_plus lte 1>>											<!--贝利存款每日随机增减-->
@@ -54,58 +54,73 @@
 	<</if>>	
 <</widget>>	
 
+<<widget "Tack_baileys_money_init">>  <!--初始化贝利小金库裡的钱用widget-->
+    <<if $Baileys_money lt 100>>											<!--防止计算后出现小于1的情况-->
+		<<set _Baileys_money to 1000>>
+		<<set $Baileys_money to 1000>>
+	<<else>>
+		<<set _random_seed to random(1,10)>>									<!--产生随机数给当前小金库有多少钱-->
+		<<set _Baileys_money to Math.round(($Baileys_money / _random_seed))>> 	<!--取整数-->	
+	<</if>>	
+	<<set $Tack_Baileys_money_init to Time.days>>							<!--锁定金库里钱的金额-->
+	
+<</widget>>
+
 <<widget "steal_Baileys_money">>		<!--显示 撬开贝利的小金库用 widget-->
 	<<if $visited_today isnot Time.days>>
 		<<lock_init>>		<!--小金库上锁状态初始化-->
 	<</if>>
-	<<if $lockpicking_tody isnot Time.days>>
-		<<lockpickicon>>
-		<<link [[尝试撬开贝利的小金库(0:10)|Bailey's piggy_banks]]>>
-			<<set $lockpicking_tody to Time.days>>	<!--用于锁定当日初始化参数，防止无限刷新-->
-			<<pass 10>>
-			<<crimeUp 20 "trespassing">>
-		<</link>><<crime "trespassing">> 
+	
+	<<if $taken_Baileys_money isnot 0>>
+		你正蹲在贝利的小金库前，你今日已经光顾过了，金库裡连个铜板也没给贝利留下来，改天再来吧！
 		<br>
-	<<elseif $lockpicking_tody is Time.days>> 
-		你正蹲在贝利的小金库前，
-		<<if currentSkillValue('skulduggery') gte $lock and $unlock is 0>>
-			成功撬开贝利的小金库
-			<<if $skulduggery lt 1000 and $lockpicking_tody_stage isnot Time.days>>
-				<span class="gold"> 你学到一些诡术上的技巧。</span>
-				<<set $skulduggery += 10>>
-				<<set $lockpicking_tody_stage to Time.days>>		<!--锁定今日已尝试撬开金库，防止无限刷诡术-->
-			<</if>>
+	<<else>>
+		<<if $lockpicking_tody isnot Time.days>>
+			<<lockpickicon>>
+			<<link [[尝试撬开贝利的小金库(0:10)|Bailey's piggy_banks]]>>
+				<<set $lockpicking_tody to Time.days>>	<!--用于锁定当日初始化参数，防止无限刷新-->
+				<<pass 10>>
+				<<crimeUp 20 "trespassing">>
+			<</link>><<crime "trespassing">> 
 			<br>
-			<<link [[拿走金库里的钱|Tack Bailey's money]]>><<crimeUp 10 "thievery">><</link>><<crime "thievery">><br>
-		<<else>>
-			<<if currentSkillValue('skulduggery') lt $lock and $lock lte 1000 and $unlock is 0>>
-				撬了半天，锁一点也没有撬开的迹象，你不得不承认
-				<span class="red">你的能力不足已撬开它</span><<skulduggeryrequired>>
+		<<elseif $lockpicking_tody is Time.days>> 
+			你正蹲在贝利的小金库前，
+			<<if currentSkillValue('skulduggery') gte $lock and $unlock is 0>>
+				成功撬开贝利的小金库
 				<<if $skulduggery lt 1000 and $lockpicking_tody_stage isnot Time.days>>
 					<span class="gold"> 你学到一些诡术上的技巧。</span>
-					<<set $skulduggery += 5>>
-					<<set $lockpicking_tody_stage to Time.days>>
-				<</if>>
-				也许......，你可以尝试看看附近有没有甚么转开密码锁的提示？
-				<!--此处可新增撬锁小游戏(猜数字)-->
-			<<elseif $lock gt 1000 and $unlock is 0>>
-				撬了半天，你发现似乎有点不一样，
-				<span class="red">需要特殊的方式解开。</span>
-				<<if $skulduggery lt 1000 and $lockpicking_tody_stage isnot Time.days>>
-					<span class="gold"> 你学到一些诡术上的技巧。</span>
-					<<set $skulduggery += 1>>
-					<<set $lockpicking_tody_stage to Time.days>>
+					<<set $skulduggery += 10>>
+					<<set $lockpicking_tody_stage to Time.days>>		<!--锁定今日已尝试撬开金库，防止无限刷诡术-->
 				<</if>>
 				<br>
-				<!--此处可新增被贝利发现事件-->
-			<<elseif $unlock is 1>>
-				惊讶的发现，
-				<span class="green">贝利似乎忘了上锁。</span>
-				<br>
-				<<link [[拿走金库里的钱|Tack Bailey's money]]>><<crimeUp 10 "thievery">><<unset $unlock>><</link>><<crime "thievery">><br>
-			<<elseif $taken_Baileys_money is 1>>
-				里头空空如也，啥也没有。
-				<br>
+				<<link [[拿走金库里的钱|Tack Bailey's money]]>><<crimeUp 10 "thievery">><</link>><<crime "thievery">><br>
+			<<else>>
+				<<if currentSkillValue('skulduggery') lt $lock and $lock lte 1000 and $unlock is 0>>
+					撬了半天，锁一点也没有撬开的迹象，你不得不承认
+					<span class="red">你的能力不足已撬开它</span><<skulduggeryrequired>>
+					<<if $skulduggery lt 1000 and $lockpicking_tody_stage isnot Time.days>>
+						<span class="gold"> 你学到一些诡术上的技巧。</span>
+						<<set $skulduggery += 5>>
+						<<set $lockpicking_tody_stage to Time.days>>
+					<</if>>
+					也许......，你可以尝试看看附近有没有甚么转开密码锁的提示？
+					<!--此处可新增撬锁小游戏(猜数字)-->
+				<<elseif $lock gt 1000 and $unlock is 0>>
+					撬了半天，你发现似乎有点不一样，
+					<span class="red">需要特殊的方式解开。</span>
+					<<if $skulduggery lt 1000 and $lockpicking_tody_stage isnot Time.days>>
+						<span class="gold"> 你学到一些诡术上的技巧。</span>
+						<<set $skulduggery += 1>>
+						<<set $lockpicking_tody_stage to Time.days>>
+					<</if>>
+					<br>
+					<!--此处可新增被贝利发现事件-->
+				<<elseif $unlock is 1>>
+					惊讶的发现，
+					<span class="green">贝利似乎忘了上锁。</span>
+					<br>
+					<<link [[拿走金库里的钱|Tack Bailey's money]]>><<crimeUp 10 "thievery">><<unset $unlock>><</link>><<crime "thievery">><br>
+				<</if>>	
 			<</if>>	
 		<</if>>	
 	<</if>>	
