@@ -1,5 +1,10 @@
 # 前言
 本人仅作简中化，不对代码做任何修改。此模组由「隨風飄逸」制作，以下是原项目链接[DOL_Baileys_piggy_banks](https://github.com/chris81605/Degrees-of-Lewdity_Baileys_piggy_banks)
+
+# 需求  
+- 需要使用[模组加载器](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/releases)
+- 并搭配[DOL中文本地化Mod](https://github.com/NumberSir/DoL-I18n-Build/releases)使用
+
 # 贝利的小金库  
 **在贝利办公室、家中新增 “贝利的小金库”，PC可于特定时段去尝试撬开它爆贝利金币。**  
 # 更新日志
