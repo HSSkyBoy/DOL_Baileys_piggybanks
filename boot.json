@@ -1,12 +1,12 @@
 {
   "name": "Bailey's piggy_banks",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "styleFileList": [],
   "scriptFileList": [],
   "tweeFileList": [
-    "Bailey's piggy_banks.twee",
     "Tack Baileys money.twee",
-    "Widgets Bailey's piggy_banks.twee"
+    "Widgets Bailey's piggy_banks.twee",
+    "Bailey's piggy_banks.twee"
   ],
   "imgFileList": [],
   "additionFile": [

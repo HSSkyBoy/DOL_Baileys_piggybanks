@@ -1,33 +1,48 @@
-
 :: Tack Bailey's money
-<<if $renttime gte 5 and $PC_rent_money_take_back isnot 0>>					<!--被贝利收租金三日内可取回-->
-	<<set _Baileys_money += $PC_rent_money_take_back>>
-	<<set $PC_rent_money_take_back to 0>>
-	你在金库里发现了熟悉的东西，<span class="gold">那是你上缴给贝利的租金！</span>
-	失而复得的感觉非常好<<llstress>><<stress -50>><br>
-<</if>>	
-<<if $Tack_Baileys_money_init isnot Time.days>>								<!--判断今日是否初始化过小金库的钱-->
-    <<Tack_baileys_money_init>> <!--初始化今日小金库的钱-->
-<</if>>	
+	
+<<Baileys_piggy_banks_money_init>> <!--初始化今日小金库的钱-->
+<<rent_money_take_back>>
 <<if $Baileys_money isnot 0 and $rng gte 25>>
 	<<if _Baileys_money gte 500000>>
 		你将金库里头的钱一扫而空，你获得了<<printmoney _Baileys_money>>，一想到平时贝利是如何敲诈你的，当<<nnpc_his "Bailey">>发现金库的钱消失不见气急败坏的模样
-		，你的心情大好。<<llstress>><<stress -20>><br>
+		，你的心情大好。
+		<<llstress>><<stress -20>>
+		<<bailey_suspect "plusss">>
+		<br>
+		<<bailey_suspect 50>>
 	<<elseif _Baileys_money gte 300000>>
-		金库裡有许多钱，你获得了<<printmoney _Baileys_money>>，满载而归让你情绪高涨。<<lstress>><<stress -10>><br>
+		金库里有许多钱，你获得了<<printmoney _Baileys_money>>，满载而归让你情绪高涨。
+		<<lstress>><<stress -10>>
+		<<bailey_suspect "pluss">>
+		<br>
+		<<bailey_suspect 30>>
 	<<elseif _Baileys_money gte 100000>>
-		你把金库里的钱全收进口袋，你获得了<<printmoney _Baileys_money>>，收穫还不错。<<lstress>><<stress -5>><br>
+		你把金库里的钱全收进口袋，你获得了<<printmoney _Baileys_money>>，收获还不错。
+		<<lstress>><<stress -5>>
+		<<bailey_suspect "plus">>
+		<br>
+		<<bailey_suspect 15>>
 	<<elseif _Baileys_money gte 50000>>
-		你把金库里的钱全收进口袋，口袋甚至没装满，你获得了<<printmoney _Baileys_money>>，收穫还行。<<lstress>><<stress -3>><br>	
+		你把金库里的钱全收进口袋，口袋甚至没装满，你获得了<<printmoney _Baileys_money>>，收获还行。
+		<<lstress>><<stress -3>>
+		<<bailey_suspect "plus">>
+		<br>
+		<<bailey_suspect 10>>
 	<<elseif _Baileys_money gte 10000>>
-		金库里头只有少许的钱，你获得了<<printmoney _Baileys_money>>，或许你得考虑去打劫其他地方？<br>
+		金库里头只有少许的钱，你获得了<<printmoney _Baileys_money>>，或许你得考虑去打劫其他地方？
+		<<bailey_suspect "plus">>
+		<br>
+		<<bailey_suspect 5>>
 	<<elseif _Baileys_money lt 10000>>
 		太惨了！金库里头只有少许的铜板，贝利该不会还有其他地方藏钱吧？<br>
-	<</if>>	
+	<<elseif _Baileys_money lte 0>>
+		<span class="red">金库里头空空如也</span>，贝利也有没钱的时候吗？肯定是藏到其他地方去了！<br>
+	<</if>>
+	<<crimeUp 10 "thievery">>	
 <<else>>	
 	<span class="red">金库里头空空如也</span>，贝利也有没钱的时候吗？肯定是藏到其他地方去了！<br>
 <</if>>
-<<if _Baileys_money gt 0>>           <!--防止贝利金库裡的钱变数未定义或不为数字时造成玩家存款变成Nan-->
+<<if _Baileys_money gt 0>>           <!--防止贝利金库里的钱变量未定义或不为数字时造成玩家存款变成Nan-->
     <<set $money += _Baileys_money>>										<!--偷走贝利的钱！-->
     <<set $Baileys_money -= _Baileys_money>>
     <<set $taken_Baileys_money to 1>>
@@ -38,7 +53,7 @@
 <!--debug用-->
 <<if $debug is 1>>
 	金库里头现在有：<<printmoney _Baileys_money>> _Baileys_money<br>
-	RNG(小于25则金库裡没钱)：$rng<br>
+	RNG(小于25则金库里没钱)：$rng<br>
 	<<set _Baileys_money_temp to $Baileys_money + _Baileys_money>>
 	贝利的存款共有= <<printmoney _Baileys_money_temp>> _Baileys_money_temp ，被你清空金库后剩 <<printmoney $Baileys_money>> $Baileys_money<br>
 	renttime=$renttime<br>
